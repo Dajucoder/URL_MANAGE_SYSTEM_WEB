@@ -1,0 +1,56 @@
+.categories-page {
+  padding: 0;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+.ant-list-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-list-item:hover {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 -16px;
+}
+
+.ant-list-item-meta-avatar {
+  margin-right: 16px;
+}
+
+.ant-list-item-action {
+  margin-left: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ant-col {
+    margin-bottom: 24px;
+  }
+  
+  .ant-list-item {
+    padding: 12px 0;
+  }
+  
+  .ant-list-item:hover {
+    padding: 12px;
+  }
+}
+
+/* 暗色主题支持 */
+[data-theme='dark'] .ant-list-item {
+  border-bottom-color: #303030;
+}
+
+[data-theme='dark'] .ant-list-item:hover {
+  background: #262626;
+}

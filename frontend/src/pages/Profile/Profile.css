@@ -1,0 +1,139 @@
+.profile-page {
+  padding: 0;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+.stats-card {
+  margin-bottom: 24px;
+}
+
+.stats-card .ant-statistic {
+  text-align: center;
+}
+
+.stats-card .ant-statistic-title {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.stats-card .ant-statistic-content {
+  color: #262626;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.profile-card,
+.preferences-card,
+.password-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.avatar-section .ant-avatar {
+  margin-bottom: 12px;
+}
+
+.avatar-section .ant-btn {
+  padding: 0;
+  height: auto;
+  font-size: 14px;
+}
+
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-item-label > label {
+  font-weight: 500;
+  color: #262626;
+}
+
+.ant-input,
+.ant-input-password,
+.ant-select-selector,
+.ant-picker {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s ease;
+}
+
+.ant-input:focus,
+.ant-input-password:focus,
+.ant-select-focused .ant-select-selector,
+.ant-picker:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.ant-btn-primary {
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .stats-card .ant-row {
+    text-align: center;
+  }
+  
+  .stats-card .ant-col {
+    margin-bottom: 16px;
+  }
+  
+  .avatar-section {
+    padding: 16px 0;
+  }
+  
+  .ant-form-item {
+    margin-bottom: 12px;
+  }
+}
+
+/* 暗色主题支持 */
+[data-theme='dark'] .profile-card,
+[data-theme='dark'] .preferences-card,
+[data-theme='dark'] .password-card,
+[data-theme='dark'] .stats-card {
+  background: #141414;
+  border-color: #303030;
+}
+
+[data-theme='dark'] .avatar-section {
+  border-bottom-color: #303030;
+}
+
+[data-theme='dark'] .ant-form-item-label > label {
+  color: #fff;
+}
+
+[data-theme='dark'] .stats-card .ant-statistic-title {
+  color: #8c8c8c;
+}
+
+[data-theme='dark'] .stats-card .ant-statistic-content {
+  color: #fff;
+}

@@ -1,0 +1,110 @@
+.layout-sider {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.layout-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.layout-menu {
+  border-right: none;
+  padding: 16px 0;
+}
+
+.layout-menu .ant-menu-item {
+  margin: 4px 8px;
+  border-radius: 6px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.layout-menu .ant-menu-item-selected {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.layout-menu .ant-menu-item:hover {
+  background: #f5f5f5;
+}
+
+.layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 9;
+}
+
+.layout-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.layout-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.layout-user-info {
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.layout-user-info:hover {
+  background: #f5f5f5;
+}
+
+.ant-layout-content {
+  overflow: auto;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .layout-sider {
+    position: fixed !important;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .ant-layout {
+    margin-left: 0 !important;
+  }
+  
+  .layout-header {
+    padding: 0 16px;
+  }
+  
+  .ant-layout-content {
+    margin: 16px;
+    padding: 16px;
+  }
+}
+
+/* 暗色主题支持 */
+[data-theme='dark'] .layout-sider {
+  background: #001529;
+}
+
+[data-theme='dark'] .layout-logo {
+  background: #001529;
+  border-bottom-color: #303030;
+}
+
+[data-theme='dark'] .layout-header {
+  background: #141414;
+  border-bottom-color: #303030;
+}
+
+[data-theme='dark'] .layout-user-info:hover {
+  background: #262626;
+}
