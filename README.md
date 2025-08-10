@@ -273,13 +273,57 @@ npm start
 6. 构建前端：`npm run build`
 
 ### Docker部署（推荐）
-```bash
-# 构建镜像
-docker-compose build
 
-# 启动服务
-docker-compose up -d
+#### 快速启动
+```bash
+# Linux/Mac
+chmod +x docker-start.sh
+./docker-start.sh
+
+# Windows
+docker-start.bat
 ```
+
+#### 手动启动
+
+**开发环境**
+```bash
+# 启动开发环境（包含热重载）
+docker-compose -f docker-compose.dev.yml up --build
+
+# 后台运行
+docker-compose -f docker-compose.dev.yml up --build -d
+```
+
+**生产环境**
+```bash
+# 启动生产环境
+docker-compose up --build -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+#### Docker服务说明
+- **frontend**: React前端应用 (端口: 80)
+- **backend**: Django后端API (端口: 8000)
+- **db**: PostgreSQL数据库 (端口: 5432)
+- **redis**: Redis缓存 (端口: 6379)
+- **nginx**: 反向代理 (生产环境，端口: 443)
+
+#### 环境变量配置
+生产环境请修改 `docker-compose.yml` 中的以下变量：
+- `DJANGO_SECRET_KEY`: Django密钥
+- `POSTGRES_PASSWORD`: 数据库密码
+- `DB_PASSWORD`: 后端数据库连接密码
+
+#### 数据持久化
+- PostgreSQL数据: `postgres_data` volume
+- 静态文件: `static_volume` volume  
+- 媒体文件: `media_volume` volume
 
 ## 贡献指南
 
