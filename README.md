@@ -92,7 +92,12 @@ URL_MANAGE_SYSTEM_WEB/
 │   ├── package.json        # Node.js依赖
 │   └── tsconfig.json       # TypeScript配置
 │
+├── docs/                   # 项目文档
+│   └── development-plan.md # 开发规划文档
 ├── config.ini.example      # 配置文件示例
+├── docker-compose.yml      # Docker生产环境配置
+├── docker-compose.dev.yml  # Docker开发环境配置
+├── LICENSE                 # MIT许可证
 └── README.md              # 项目说明文档
 ```
 
@@ -109,43 +114,17 @@ git clone git@github.com:Dajucoder/URL_MANAGE_SYSTEM_WEB.git
 cd URL_MANAGE_SYSTEM_WEB
 ```
 
-### 2. 后端设置
+### 2. 本地开发环境
 
-#### 安装Python依赖
+#### 后端设置
 ```bash
 cd backend
+
+# 安装Python依赖
 pip install -r requirements.txt
-```
 
-#### 配置环境变量（可选）
-项目默认使用SQLite数据库，无需额外配置。如需使用PostgreSQL，请设置以下环境变量：
-
-```bash
-# Linux/Mac
-export DB_ENGINE=django.db.backends.postgresql
-export DB_NAME=url_manage_db
-export DB_USER=postgres
-export DB_PASSWORD=your_password_here
-export DB_HOST=localhost
-export DB_PORT=5432
-export DJANGO_SECRET_KEY=your_secret_key
-
-# Windows PowerShell
-$env:DB_ENGINE="django.db.backends.postgresql"
-$env:DB_NAME="url_manage_db"
-$env:DB_USER="postgres"
-$env:DB_PASSWORD="your_password_here"
-$env:DB_HOST="localhost"
-$env:DB_PORT="5432"
-$env:DJANGO_SECRET_KEY="your_secret_key"
-```
-
-#### 初始化数据库
-```bash
-# 创建数据库迁移
+# 初始化数据库
 python manage.py makemigrations
-
-# 应用迁移
 python manage.py migrate
 
 # 创建超级用户（可选）
@@ -155,17 +134,38 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-### 3. 前端设置
-
-#### 安装Node.js依赖
+#### 前端设置
 ```bash
 cd frontend
+
+# 安装Node.js依赖
 npm install
+
+# 启动前端开发服务器
+npm start
 ```
 
-#### 启动前端开发服务器
+### 3. Docker部署
+
+#### 开发环境
 ```bash
-npm start
+# 启动开发环境（包含热重载）
+docker-compose -f docker-compose.dev.yml up --build
+
+# 后台运行
+docker-compose -f docker-compose.dev.yml up --build -d
+```
+
+#### 生产环境
+```bash
+# 启动生产环境
+docker-compose up --build -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
 ```
 
 ### 4. 访问系统
@@ -239,6 +239,26 @@ npm start
 - `GET /api/analytics/dashboard/` - 获取仪表盘统计数据
 - `GET /api/analytics/activity/` - 获取活动时间线
 
+## Docker服务说明
+
+### 服务组件
+- **frontend**: React前端应用 (端口: 80)
+- **backend**: Django后端API (端口: 8000)
+- **db**: PostgreSQL数据库 (端口: 5432)
+- **redis**: Redis缓存 (端口: 6379)
+- **nginx**: 反向代理 (生产环境，端口: 443)
+
+### 环境变量配置
+生产环境请修改 `docker-compose.yml` 中的以下变量：
+- `DJANGO_SECRET_KEY`: Django密钥
+- `POSTGRES_PASSWORD`: 数据库密码
+- `DB_PASSWORD`: 后端数据库连接密码
+
+### 数据持久化
+- PostgreSQL数据: `postgres_data` volume
+- 静态文件: `static_volume` volume  
+- 媒体文件: `media_volume` volume
+
 ## 开发说明
 
 ### 代码规范
@@ -262,68 +282,27 @@ npm start
 - 分类表：支持多级分类结构
 - 标签表：灵活的标签系统
 
-## 部署说明
+## 开发规划
 
-### 生产环境部署
-1. 设置环境变量
-2. 配置PostgreSQL数据库
-3. 收集静态文件：`python manage.py collectstatic`
-4. 使用Gunicorn或uWSGI部署Django
-5. 使用Nginx作为反向代理
-6. 构建前端：`npm run build`
+详细的开发规划和路线图请查看：[开发规划文档](docs/development-plan.md)
 
-### Docker部署（推荐）
+### 短期目标 (v1.1)
+- 搜索功能优化
+- 用户体验提升
+- 移动端适配
+- 数据导入/导出
 
-#### 快速启动
-```bash
-# Linux/Mac
-chmod +x docker-start.sh
-./docker-start.sh
+### 中期目标 (v1.2-1.5)
+- AI推荐系统
+- 浏览器插件
+- 第三方集成
+- 性能优化
 
-# Windows
-docker-start.bat
-```
-
-#### 手动启动
-
-**开发环境**
-```bash
-# 启动开发环境（包含热重载）
-docker-compose -f docker-compose.dev.yml up --build
-
-# 后台运行
-docker-compose -f docker-compose.dev.yml up --build -d
-```
-
-**生产环境**
-```bash
-# 启动生产环境
-docker-compose up --build -d
-
-# 查看日志
-docker-compose logs -f
-
-# 停止服务
-docker-compose down
-```
-
-#### Docker服务说明
-- **frontend**: React前端应用 (端口: 80)
-- **backend**: Django后端API (端口: 8000)
-- **db**: PostgreSQL数据库 (端口: 5432)
-- **redis**: Redis缓存 (端口: 6379)
-- **nginx**: 反向代理 (生产环境，端口: 443)
-
-#### 环境变量配置
-生产环境请修改 `docker-compose.yml` 中的以下变量：
-- `DJANGO_SECRET_KEY`: Django密钥
-- `POSTGRES_PASSWORD`: 数据库密码
-- `DB_PASSWORD`: 后端数据库连接密码
-
-#### 数据持久化
-- PostgreSQL数据: `postgres_data` volume
-- 静态文件: `static_volume` volume  
-- 媒体文件: `media_volume` volume
+### 长期目标 (v2.0+)
+- 多用户协作
+- 企业级功能
+- 微服务架构
+- 插件系统
 
 ## 贡献指南
 
@@ -333,6 +312,12 @@ docker-compose down
 4. 推送分支：`git push origin feature/new-feature`
 5. 提交Pull Request
 
+### 开发流程
+1. 查看[开发规划文档](docs/development-plan.md)了解项目方向
+2. 在Issues中讨论新功能或bug修复
+3. 遵循代码规范和测试要求
+4. 提交前确保所有测试通过
+
 ## 许可证
 
 MIT License - 详见 [LICENSE](LICENSE) 文件
@@ -341,6 +326,7 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 - 项目地址：https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB
 - 问题反馈：https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB/issues
+- 开发规划：[docs/development-plan.md](docs/development-plan.md)
 
 ---
 
