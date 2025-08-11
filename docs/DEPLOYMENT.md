@@ -2,7 +2,11 @@
 
 ## 概述
 
-本文档详细介绍了URL管理系统在不同环境下的部署方法，包括开发环境、测试环境和生产环境。
+本文档详细介绍了URL管理系统在不同环境下的部署方法，包括开发环境、测试环境和生产环境。支持Docker容器化部署和传统部署两种方式，推荐使用Docker部署以获得更好的一致性和可维护性。
+
+**最后更新**: 2025年1月11日  
+**适用版本**: v1.0.0+  
+**维护者**: Dajucoder
 
 ## 环境要求
 
@@ -573,4 +577,132 @@ spec:
         - containerPort: 8000
 ```
 
-这个部署指南涵盖了从开发环境到生产环境的完整部署流程，包括监控、维护和故障排除等方面的内容。
+## 快速部署命令
+
+### 开发环境一键启动
+```bash
+# 克隆项目
+git clone https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB.git
+cd URL_MANAGE_SYSTEM_WEB
+
+# 启动开发环境
+docker-compose -f docker-compose.dev.yml up --build -d
+
+# 初始化数据
+docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
+docker-compose -f docker-compose.dev.yml exec backend python manage.py create_admin
+```
+
+### 生产环境一键部署
+```bash
+# 克隆项目
+git clone https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB.git
+cd URL_MANAGE_SYSTEM_WEB
+
+# 配置环境变量
+cp config.ini.example config.ini
+nano config.ini  # 编辑配置
+
+# 启动生产环境
+docker-compose up --build -d
+
+# 初始化数据
+docker-compose exec backend python manage.py migrate
+docker-compose exec backend python manage.py create_admin
+```
+
+## 版本升级
+
+### Docker环境升级
+```bash
+# 备份数据
+docker-compose exec -T db pg_dump -U postgres url_manage_db > backup_$(date +%Y%m%d).sql
+
+# 停止服务
+docker-compose down
+
+# 拉取最新代码
+git pull origin master
+
+# 重新构建并启动
+docker-compose up --build -d
+
+# 运行数据库迁移
+docker-compose exec backend python manage.py migrate
+
+# 收集静态文件
+docker-compose exec backend python manage.py collectstatic --noinput
+```
+
+### 回滚操作
+```bash
+# 回滚到指定版本
+git checkout <previous_version_tag>
+docker-compose up --build -d
+
+# 恢复数据库备份（如需要）
+docker-compose exec -T db psql -U postgres url_manage_db < backup_20250111.sql
+```
+
+## 多环境管理
+
+### 环境配置文件
+```bash
+# 开发环境
+cp config.ini.example config.dev.ini
+
+# 测试环境  
+cp config.ini.example config.test.ini
+
+# 生产环境
+cp config.ini.example config.prod.ini
+```
+
+### 环境切换脚本
+```bash
+#!/bin/bash
+# deploy.sh
+
+ENVIRONMENT=${1:-dev}
+
+case $ENVIRONMENT in
+  "dev")
+    docker-compose -f docker-compose.dev.yml up --build -d
+    ;;
+  "test")
+    docker-compose -f docker-compose.test.yml up --build -d
+    ;;
+  "prod")
+    docker-compose up --build -d
+    ;;
+  *)
+    echo "Usage: $0 {dev|test|prod}"
+    exit 1
+    ;;
+esac
+
+echo "Deployed to $ENVIRONMENT environment"
+```
+
+## 相关文档
+
+- 📚 **项目主页**: [README.md](../README.md)
+- 🔒 **安全配置**: [SECURITY_NOTES.md](SECURITY_NOTES.md)
+- ✅ **安全检查**: [SECURITY_CHECK.md](SECURITY_CHECK.md)
+- 📋 **API文档**: [API.md](API.md)
+- 🚀 **开发规划**: [development-plan.md](development-plan.md)
+
+## 技术支持
+
+- 🐛 **问题反馈**: https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB/issues
+- 📧 **项目地址**: https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB
+- 💬 **讨论区**: https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB/discussions
+
+---
+
+📝 **部署指南最后更新**: 2025年1月11日  
+🔄 **适用版本**: v1.0.0+  
+👨‍💻 **文档维护**: Dajucoder  
+📋 **反馈建议**: 欢迎通过GitHub Issues提出改进建议
+
+这个部署指南涵盖了从开发环境到生产环境的完整部署流程，包括监控、维护、故障排除、版本升级等方面的内容。无论您是初次部署还是维护现有系统，都可以在这里找到所需的详细指导。

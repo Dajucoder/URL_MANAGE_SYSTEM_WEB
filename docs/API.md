@@ -2,14 +2,17 @@
 
 ## 概述
 
-URL管理系统提供完整的RESTful API接口，支持用户认证、网站管理、书签管理等功能。
+URL管理系统提供完整的RESTful API接口，支持用户认证、网站管理、书签管理、分类标签管理、数据统计等功能。基于Django REST Framework构建，遵循RESTful设计原则。
 
 ## 基础信息
 
-- **Base URL**: `http://localhost:8000/api/`
-- **认证方式**: JWT Token
+- **Base URL**: `http://localhost:8000/api/` (开发环境)
+- **生产环境**: `https://yourdomain.com/api/`
+- **认证方式**: JWT Token (djangorestframework-simplejwt)
 - **数据格式**: JSON
 - **字符编码**: UTF-8
+- **API版本**: v1.0
+- **文档更新**: 2025-01-11
 
 ## 认证
 
@@ -445,16 +448,244 @@ curl -X GET http://localhost:8000/api/websites/ \
 2. 设置环境变量：`base_url`, `token`
 3. 运行测试用例
 
+## 健康检查
+
+### 系统健康状态
+```http
+GET /api/health/
+```
+
+**响应示例**:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-01-11T14:30:00Z",
+  "version": "1.0.0",
+  "services": {
+    "database": "connected",
+    "redis": "connected",
+    "storage": "available"
+  },
+  "uptime": "2 days, 14:30:25"
+}
+```
+
+## 分页说明
+
+所有列表接口都支持分页，使用以下参数：
+- `page`: 页码（从1开始）
+- `page_size`: 每页数量（默认20，最大100）
+
+**分页响应格式**:
+```json
+{
+  "count": 150,
+  "next": "http://localhost:8000/api/websites/?page=3",
+  "previous": "http://localhost:8000/api/websites/?page=1",
+  "results": [...]
+}
+```
+
+## 搜索和过滤
+
+### 全文搜索
+```http
+GET /api/websites/?search=github
+GET /api/bookmarks/?search=开发工具
+```
+
+### 分类过滤
+```http
+GET /api/websites/?category=1
+GET /api/websites/?category__name=开发工具
+```
+
+### 标签过滤
+```http
+GET /api/websites/?tags=1,2,3
+GET /api/websites/?tags__name=git,代码
+```
+
+### 日期范围过滤
+```http
+GET /api/websites/?created_after=2025-01-01
+GET /api/websites/?created_before=2025-12-31
+GET /api/websites/?updated_since=2025-01-10
+```
+
+### 排序
+```http
+GET /api/websites/?ordering=-created_at
+GET /api/websites/?ordering=title
+GET /api/websites/?ordering=-rating,title
+```
+
+可用排序字段：
+- `title`: 标题
+- `created_at`: 创建时间
+- `updated_at`: 更新时间
+- `rating`: 评分
+- `visit_count`: 访问次数
+
+## 批量操作
+
+### 批量创建网站
+```http
+POST /api/websites/batch/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "websites": [
+    {
+      "title": "GitHub",
+      "url": "https://github.com",
+      "category": 1
+    },
+    {
+      "title": "GitLab",
+      "url": "https://gitlab.com",
+      "category": 1
+    }
+  ]
+}
+```
+
+### 批量删除
+```http
+DELETE /api/websites/batch/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "ids": [1, 2, 3, 4, 5]
+}
+```
+
+### 批量更新分类
+```http
+PATCH /api/websites/batch/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "ids": [1, 2, 3],
+  "data": {
+    "category": 2
+  }
+}
+```
+
+## 文件上传
+
+### 上传网站图标
+```http
+POST /api/websites/{id}/upload-icon/
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+icon: <选择图片文件>
+```
+
+### 支持的文件格式
+- 图片：PNG, JPG, JPEG, GIF, WebP
+- 最大文件大小：5MB
+- 推荐尺寸：32x32, 64x64, 128x128
+
+## WebHooks
+
+### 配置WebHook
+```http
+POST /api/webhooks/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "url": "https://your-server.com/webhook",
+  "events": ["website.created", "website.updated", "website.deleted"],
+  "secret": "your_webhook_secret"
+}
+```
+
+### 支持的事件
+- `website.created`: 网站创建
+- `website.updated`: 网站更新
+- `website.deleted`: 网站删除
+- `bookmark.created`: 书签创建
+- `category.created`: 分类创建
+
 ## 更新日志
 
-### v1.0.0
-- 完整的RESTful API
-- JWT认证机制
-- 用户、网站、书签管理
-- 数据统计接口
+### v1.0.0 (2025-01-11)
+- ✅ 完整的RESTful API架构
+- ✅ JWT认证机制和令牌刷新
+- ✅ 用户注册、登录、资料管理
+- ✅ 网站CRUD操作和搜索功能
+- ✅ 书签管理和收藏夹功能
+- ✅ 分类和标签系统
+- ✅ 数据统计和仪表盘接口
+- ✅ 文件上传和媒体处理
+- ✅ 分页、排序、过滤功能
+- ✅ 错误处理和状态码规范
+- ✅ API文档和健康检查
 
-### 计划中的功能
-- GraphQL支持
-- WebSocket实时通知
-- 批量操作优化
-- API版本控制
+### 即将发布 (v1.1.0)
+- 🔄 批量操作API优化
+- 🔄 高级搜索功能
+- 🔄 数据导入导出API
+- 🔄 WebHook通知系统
+- 🔄 API访问统计和限流
+- 🔄 GraphQL支持
+
+### 计划中的功能 (v1.2+)
+- 📋 WebSocket实时通知
+- 📋 API版本控制 (v2)
+- 📋 第三方集成API
+- 📋 移动端专用API
+- 📋 AI推荐接口
+- 📋 数据分析API
+
+## 开发工具
+
+### Postman集合
+下载并导入Postman集合文件：
+```bash
+curl -O https://raw.githubusercontent.com/Dajucoder/URL_MANAGE_SYSTEM_WEB/master/docs/postman_collection.json
+```
+
+### OpenAPI规范
+访问交互式API文档：
+- Swagger UI: `http://localhost:8000/api/docs/`
+- ReDoc: `http://localhost:8000/api/redoc/`
+- OpenAPI Schema: `http://localhost:8000/api/schema/`
+
+### 开发环境测试
+```bash
+# 启动开发服务器
+docker-compose -f docker-compose.dev.yml up
+
+# 运行API测试
+cd backend
+python manage.py test api
+
+# 生成测试覆盖率报告
+coverage run --source='.' manage.py test
+coverage report
+coverage html
+```
+
+## 技术支持
+
+- 📚 **完整文档**: [项目README](../README.md)
+- 🚀 **部署指南**: [DEPLOYMENT.md](DEPLOYMENT.md)
+- 🔒 **安全说明**: [SECURITY_NOTES.md](SECURITY_NOTES.md)
+- ✅ **安全检查**: [SECURITY_CHECK.md](SECURITY_CHECK.md)
+- 📋 **开发规划**: [development-plan.md](development-plan.md)
+- 🐛 **问题反馈**: https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB/issues
+
+---
+
+📝 **文档最后更新**: 2025年1月11日  
+🔄 **API版本**: v1.0.0  
+👨‍💻 **维护者**: Dajucoder  
+📧 **联系方式**: 通过GitHub Issues反馈问题
