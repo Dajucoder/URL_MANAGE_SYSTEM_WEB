@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: url_manage_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -36,10 +36,10 @@ services:
       - DB_ENGINE=django.db.backends.postgresql
       - DB_NAME=url_manage_db
       - DB_USER=postgres
-      - DB_PASSWORD=postgres123
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres123}
       - DB_HOST=db
       - DB_PORT=5432
-      - DJANGO_SECRET_KEY=your-secret-key-change-in-production
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-dev-secret-key-not-for-production}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend:/app

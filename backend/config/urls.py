@@ -3,9 +3,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from .views import health_check, api_info
+from .views import health_check, api_info, index
+from .swagger_views import swagger_ui_fixed
 
 urlpatterns = [
+    # 首页
+    path('', index, name='index'),
+    
     path('admin/', admin.site.urls),
     
     # 系统接口
@@ -21,6 +25,7 @@ urlpatterns = [
     # API文档路由
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/docs-fixed/', swagger_ui_fixed, name='swagger-ui-fixed'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 

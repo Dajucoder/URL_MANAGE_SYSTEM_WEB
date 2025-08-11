@@ -1,7 +1,10 @@
-# 配置文件
+# 配置文件和敏感信息
 config.ini
 .env
+.env.local
+.env.production
 *.env
+!.env.example
 
 # Python
 __pycache__/
@@ -31,6 +34,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
+staticfiles/
 
 # React / Node
 node_modules/
@@ -51,7 +55,7 @@ yarn-error.log*
 *.swo
 *~
 
-# 数据库
+# 数据库文件
 *.sqlite3
 *.db
 
@@ -65,6 +69,18 @@ htmlcov/
 venv/
 env/
 ENV/
+
+# Docker
+.dockerignore
+
+# 备份文件
+*.bak
+*.backup
+*.tmp
+
+# 日志文件
+logs/
+*.log
 
 # 其他
 .DS_Store

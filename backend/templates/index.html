@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL管理系统 - 现代化网站收藏管理平台</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .features {
+            background: white;
+            padding: 4rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .api-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 4rem 0;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .api-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .api-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .api-card h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .api-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            margin-top: 1rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="logo">
+                    <i class="fas fa-bookmark"></i> URL管理系统
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/api/docs/">API文档</a></li>
+                    <li><a href="/api/redoc/">ReDoc</a></li>
+                    <li><a href="/admin/">管理后台</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>现代化网站收藏管理</h1>
+                <p>功能完整的URL管理系统，支持分类、标签、搜索和数据分析</p>
+                <div class="cta-buttons">
+                    <a href="/api/docs/" class="btn btn-primary">
+                        <i class="fas fa-book"></i> 查看API文档
+                    </a>
+                    <a href="/api/redoc/" class="btn btn-secondary">
+                        <i class="fas fa-file-alt"></i> ReDoc文档
+                    </a>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>系统运行正常</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">核心功能</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">为现代Web应用设计的完整URL管理解决方案</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>用户管理</h3>
+                        <p>完整的用户认证系统，支持JWT令牌认证、用户注册、登录和权限管理</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>网站管理</h3>
+                        <p>智能网站信息管理，支持自动获取网站元数据、分类标签和高级搜索功能</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <h3>书签收藏</h3>
+                        <p>个人书签管理系统，支持收藏夹分组、批量操作和快速访问</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>数据分析</h3>
+                        <p>详细的使用统计和数据分析，提供可视化仪表盘和活动时间线</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="api-section">
+            <div class="container">
+                <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">API接口</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">RESTful API设计，完整的OpenAPI 3.0文档</p>
+                
+                <div class="api-grid">
+                    <div class="api-card">
+                        <h4><i class="fas fa-user-shield"></i> 用户认证</h4>
+                        <p>JWT令牌认证、用户注册、登录、登出等认证相关接口</p>
+                    </div>
+                    
+                    <div class="api-card">
+                        <h4><i class="fas fa-user-cog"></i> 用户管理</h4>
+                        <p>用户信息管理、个人资料设置、密码修改等接口</p>
+                    </div>
+                    
+                    <div class="api-card">
+                        <h4><i class="fas fa-sitemap"></i> 网站管理</h4>
+                        <p>网站信息的增删改查、搜索、分类管理等接口</p>
+                    </div>
+                    
+                    <div class="api-card">
+                        <h4><i class="fas fa-tags"></i> 分类标签</h4>
+                        <p>网站分类和标签的管理接口，支持层级分类</p>
+                    </div>
+                    
+                    <div class="api-card">
+                        <h4><i class="fas fa-heart"></i> 书签管理</h4>
+                        <p>书签收藏、收藏夹管理、批量操作等接口</p>
+                    </div>
+                    
+                    <div class="api-card">
+                        <h4><i class="fas fa-analytics"></i> 数据统计</h4>
+                        <p>仪表盘数据、统计分析、活动记录等接口</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 URL管理系统. 基于 Django 4.2 + Django REST Framework 构建</p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">
+                <i class="fas fa-code"></i> 现代化 • 
+                <i class="fas fa-mobile-alt"></i> 响应式 • 
+                <i class="fas fa-docker"></i> Docker支持
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 简单的状态检查
+        fetch('/api/health/')
+            .then(response => response.json())
+            .then(data => {
+                console.log('系统状态:', data);
+            })
+            .catch(error => {
+                console.log('状态检查失败:', error);
+                document.querySelector('.status-dot').style.background = '#f44336';
+                document.querySelector('.status-indicator span').textContent = '系统检查中...';
+            });
+    </script>
+</body>
+</html>

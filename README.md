@@ -2,6 +2,15 @@
 
 一个功能完整的网站收藏和书签管理系统，基于React前端和Django后端开发，支持SQLite和PostgreSQL数据库。
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Django](https://img.shields.io/badge/Django-4.2-green.svg)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/React-19.1-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue.svg)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+
+> 🚀 一个现代化的网站收藏和书签管理解决方案，提供完整的用户认证、分类管理、数据统计等功能。
+
 ## 项目特点
 
 - 🎨 现代化响应式UI设计（基于Ant Design 5.x）
@@ -422,40 +431,149 @@ npm test
 ### 生产环境部署
 
 1. **服务器要求**
-   - Ubuntu 20.04+ / CentOS 8+
-   - Docker 20.10+
-   - Docker Compose 2.0+
-   - 2GB+ RAM
-   - 10GB+ 存储空间
+   - Ubuntu 20.04+ / CentOS 8+ / Debian 11+
+   - Docker 20.10+ 和 Docker Compose 2.0+
+   - 最低配置：2GB RAM, 2 CPU核心, 20GB存储
+   - 推荐配置：4GB RAM, 4 CPU核心, 50GB存储
+   - 开放端口：80, 443, 22
 
 2. **部署步骤**
 ```bash
-# 克隆项目
+# 1. 克隆项目
 git clone https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB.git
 cd URL_MANAGE_SYSTEM_WEB
 
-# 配置环境变量
+# 2. 配置环境变量
 cp config.ini.example config.ini
 # 编辑 config.ini 设置生产环境配置
+nano config.ini
 
-# 启动服务
+# 3. 配置Docker环境变量
+# 编辑 docker-compose.yml 中的环境变量
+nano docker-compose.yml
+
+# 4. 启动服务
 docker-compose up -d
 
-# 初始化数据库
+# 5. 等待服务启动完成
+docker-compose logs -f
+
+# 6. 初始化数据库
 docker-compose exec backend python manage.py migrate
-docker-compose exec backend python manage.py create_admin
+docker-compose exec backend python manage.py create_admin --username admin --password your_secure_password --email admin@yourdomain.com
+
+# 7. 初始化默认数据（可选）
+docker-compose exec backend python manage.py init_default_data
+
+# 8. 验证部署
+curl http://localhost/api/health/
 ```
 
 3. **SSL证书配置**
-   - 使用Let's Encrypt获取免费SSL证书
-   - 配置Nginx反向代理
-   - 启用HTTPS重定向
+```bash
+# 使用Certbot获取Let's Encrypt证书
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
+
+# 自动续期
+sudo crontab -e
+# 添加：0 12 * * * /usr/bin/certbot renew --quiet
+```
+
+4. **Nginx配置示例**
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com;
+    
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    
+    location /api/ {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ### 监控和维护
-- 使用Docker健康检查监控服务状态
-- 定期备份PostgreSQL数据库
-- 监控日志文件和错误报告
-- 定期更新依赖包和安全补丁
+
+#### 健康检查
+```bash
+# 检查服务状态
+docker-compose ps
+
+# 查看服务日志
+docker-compose logs -f [service_name]
+
+# 检查系统资源使用
+docker stats
+
+# 检查磁盘空间
+df -h
+```
+
+#### 数据备份
+```bash
+# 自动备份脚本
+#!/bin/bash
+BACKUP_DIR="/backup/url_manage_system"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+# 创建备份目录
+mkdir -p $BACKUP_DIR
+
+# 备份数据库
+docker-compose exec -T db pg_dump -U postgres url_manage_db > $BACKUP_DIR/db_backup_$DATE.sql
+
+# 备份媒体文件
+docker cp $(docker-compose ps -q backend):/app/media $BACKUP_DIR/media_$DATE
+
+# 清理7天前的备份
+find $BACKUP_DIR -name "*.sql" -mtime +7 -delete
+find $BACKUP_DIR -name "media_*" -mtime +7 -exec rm -rf {} \;
+```
+
+#### 日志管理
+```bash
+# 配置日志轮转
+sudo nano /etc/logrotate.d/docker-compose
+
+# 内容：
+/var/lib/docker/containers/*/*.log {
+    rotate 7
+    daily
+    compress
+    size=1M
+    missingok
+    delaycompress
+    copytruncate
+}
+```
+
+#### 性能优化
+- 启用Redis缓存提升响应速度
+- 配置数据库连接池
+- 使用CDN加速静态资源
+- 启用Gzip压缩
+- 定期清理无用的Docker镜像和容器
 
 ## 开发规划
 
@@ -521,16 +639,148 @@ docker-compose exec backend python manage.py create_admin
 ## 常见问题
 
 ### Q: 如何重置管理员密码？
-A: 使用管理命令：`python manage.py create_admin --username admin --password new_password`
+A: 使用管理命令：
+```bash
+python manage.py create_admin --username admin --password new_password --email admin@example.com
+```
 
-### Q: 如何备份数据？
-A: 使用Django命令：`python manage.py dumpdata > backup.json`
+### Q: 如何备份和恢复数据？
+A: 
+```bash
+# 备份数据
+python manage.py dumpdata > backup.json
+
+# 恢复数据
+python manage.py loaddata backup.json
+```
 
 ### Q: 如何切换到PostgreSQL？
-A: 修改 `config.ini` 中的数据库配置，然后重新运行迁移命令。
+A: 
+1. 修改 `config.ini` 中的数据库配置：
+```ini
+[database]
+ENGINE = django.db.backends.postgresql
+NAME = url_manage_db
+USER = your_db_user
+PASSWORD = your_db_password
+HOST = localhost
+PORT = 5432
+```
+2. 安装PostgreSQL依赖：`pip install psycopg2-binary`
+3. 重新运行迁移：`python manage.py migrate`
 
 ### Q: Docker容器启动失败怎么办？
-A: 检查日志：`docker-compose logs` 并确保端口未被占用。
+A: 
+1. 检查日志：`docker-compose logs -f`
+2. 确保端口未被占用：`netstat -tulpn | grep :3000`
+3. 检查Docker服务状态：`docker ps -a`
+4. 重新构建镜像：`docker-compose up --build`
+
+### Q: 如何启用HTTPS？
+A: 
+1. 获取SSL证书（推荐Let's Encrypt）
+2. 配置Nginx反向代理
+3. 修改前端API地址为HTTPS
+4. 更新CORS设置
+
+### Q: 如何导入浏览器书签？
+A: 
+1. 从浏览器导出书签为HTML格式
+2. 使用管理后台的导入功能
+3. 或通过API批量导入：`POST /api/bookmarks/import/`
+
+### Q: 系统性能优化建议？
+A: 
+- 启用Redis缓存
+- 配置数据库索引
+- 使用CDN加速静态资源
+- 启用Gzip压缩
+- 定期清理日志文件
+
+## 故障排除
+
+### 🔧 常见问题解决
+
+#### 前端问题
+```bash
+# 清除npm缓存
+npm cache clean --force
+
+# 删除node_modules重新安装
+rm -rf node_modules package-lock.json
+npm install
+
+# 检查端口占用
+lsof -i :3000
+```
+
+#### 后端问题
+```bash
+# 检查Django配置
+python manage.py check
+
+# 查看详细错误信息
+python manage.py runserver --verbosity=2
+
+# 重置数据库
+python manage.py flush
+python manage.py migrate
+```
+
+#### Docker问题
+```bash
+# 清理Docker资源
+docker system prune -a
+
+# 重新构建镜像
+docker-compose build --no-cache
+
+# 查看容器资源使用
+docker stats
+
+# 进入容器调试
+docker-compose exec backend bash
+docker-compose exec frontend sh
+```
+
+#### 数据库问题
+```bash
+# 检查数据库连接
+python manage.py dbshell
+
+# 查看数据库状态
+docker-compose exec db psql -U postgres -c "\l"
+
+# 重建索引
+python manage.py migrate --run-syncdb
+```
+
+### 🚨 紧急恢复
+
+#### 服务无法启动
+1. 检查日志：`docker-compose logs -f`
+2. 验证配置文件：`config.ini`
+3. 检查端口占用：`netstat -tulpn`
+4. 重启服务：`docker-compose restart`
+
+#### 数据丢失恢复
+1. 停止服务：`docker-compose down`
+2. 恢复数据库备份：`docker-compose exec db psql -U postgres url_manage_db < backup.sql`
+3. 恢复媒体文件：`docker cp backup/media/. container:/app/media/`
+4. 重启服务：`docker-compose up -d`
+
+#### 性能问题诊断
+```bash
+# 查看系统资源
+htop
+iostat -x 1
+
+# 查看数据库性能
+docker-compose exec db psql -U postgres -c "SELECT * FROM pg_stat_activity;"
+
+# 查看应用日志
+docker-compose logs backend | grep ERROR
+```
 
 ## 许可证
 
@@ -543,12 +793,48 @@ A: 检查日志：`docker-compose logs` 并确保端口未被占用。
 - 📋 **开发规划**：[docs/development-plan.md](docs/development-plan.md)
 - 🔒 **安全说明**：[SECURITY_NOTES.md](SECURITY_NOTES.md)
 
+## 版本历史
+
+### v1.0.0 (2025-01-11)
+- ✅ 完整的用户认证系统
+- ✅ 网站和书签管理功能
+- ✅ 分类标签系统
+- ✅ 数据统计仪表盘
+- ✅ Docker容器化部署
+- ✅ 响应式UI设计
+- ✅ RESTful API架构
+- ✅ 安全防护机制
+
+### 即将发布 (v1.1.0)
+- 🔄 搜索功能优化
+- 🔄 用户体验提升
+- 🔄 移动端适配优化
+- 🔄 数据导入/导出功能
+- 🔄 浏览器书签导入
+
+## 项目统计
+
+- 📊 **代码行数**: ~15,000+ 行
+- 🏗️ **架构**: 前后端分离
+- 🧪 **测试覆盖率**: 目标 80%+
+- 📱 **支持平台**: Web, 移动端浏览器
+- 🌍 **多语言**: 计划支持中英文
+- 👥 **团队规模**: 1-5人小团队
+
 ## 致谢
 
 感谢所有为这个项目做出贡献的开发者！
+
+特别感谢以下开源项目：
+- [React](https://reactjs.org/) - 前端框架
+- [Django](https://www.djangoproject.com/) - 后端框架
+- [Ant Design](https://ant.design/) - UI组件库
+- [Docker](https://www.docker.com/) - 容器化技术
 
 ---
 
 ⭐ **如果这个项目对您有帮助，请给个Star支持一下！**
 
 🚀 **欢迎提交Issue和Pull Request，让我们一起完善这个项目！**
+
+📧 **有问题或建议？欢迎通过Issue或邮件联系我们！**

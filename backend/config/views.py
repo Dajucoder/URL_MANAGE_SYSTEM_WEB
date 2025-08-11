@@ -7,9 +7,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 from django.conf import settings
+from django.shortcuts import render
 import django
 import sys
 from datetime import datetime
+
+
+def index(request):
+    """首页视图"""
+    return render(request, 'index.html')
 
 
 @extend_schema(

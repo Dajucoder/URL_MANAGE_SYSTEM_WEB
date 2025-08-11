@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
+    'drf_spectacular_sidecar',
     
     # 自定义应用
     'users',
@@ -225,6 +226,11 @@ SPECTACULAR_SETTINGS = {
         'tryItOutEnabled': True,
         'supportedSubmitMethods': ['get', 'post', 'put', 'delete', 'patch'],
         'validatorUrl': None,
+        'operationsSorter': 'alpha',
+        'tagsSorter': 'alpha',
+        'showMutatedRequest': True,
+        'showRequestHeaders': True,
+        'layout': 'BaseLayout',  # 修复 StandaloneLayout 错误
     },
     'REDOC_UI_SETTINGS': {
         'hideDownloadButton': False,
