@@ -116,11 +116,14 @@ URL_MANAGE_SYSTEM_WEB/
 │   └── tsconfig.json           # TypeScript配置
 │
 ├── docs/                       # 项目文档
-│   └── development-plan.md     # 开发规划文档
+│   ├── API.md                  # API接口文档
+│   ├── DEPLOYMENT.md           # 部署指南
+│   ├── development-plan.md     # 开发规划文档
+│   ├── SECURITY_CHECK.md       # 安全检查清单
+│   └── SECURITY_NOTES.md       # 安全部署说明
 ├── config.ini.example          # 配置文件示例
 ├── docker-compose.yml          # Docker生产环境配置
 ├── docker-compose.dev.yml      # Docker开发环境配置
-├── SECURITY_NOTES.md           # 安全部署说明
 ├── LICENSE                     # MIT许可证
 └── README.md                   # 项目说明文档
 ```
@@ -396,7 +399,7 @@ GET /api/analytics/reports/   # 获取分析报告
 - 数据库连接加密
 - 静态文件安全访问
 
-**重要提醒**：部署前请阅读 [SECURITY_NOTES.md](SECURITY_NOTES.md) 了解安全配置要求。
+**重要提醒**：部署前请阅读 [docs/SECURITY_NOTES.md](docs/SECURITY_NOTES.md) 了解安全配置要求。
 
 ## 开发说明
 
@@ -574,6 +577,16 @@ sudo nano /etc/logrotate.d/docker-compose
 - 使用CDN加速静态资源
 - 启用Gzip压缩
 - 定期清理无用的Docker镜像和容器
+
+## 📚 项目文档
+
+本项目提供完整的文档体系，所有文档统一存放在 `docs/` 目录中：
+
+- **[API.md](docs/API.md)** - 详细的API接口文档，包含所有端点说明和示例
+- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - 完整的部署指南，包含生产环境配置
+- **[development-plan.md](docs/development-plan.md)** - 项目开发规划和路线图
+- **[SECURITY_CHECK.md](docs/SECURITY_CHECK.md)** - 安全检查清单和配置验证
+- **[SECURITY_NOTES.md](docs/SECURITY_NOTES.md)** - 安全部署说明和最佳实践
 
 ## 开发规划
 
@@ -791,7 +804,10 @@ docker-compose logs backend | grep ERROR
 - 📧 **项目地址**：https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB
 - 🐛 **问题反馈**：https://github.com/Dajucoder/URL_MANAGE_SYSTEM_WEB/issues
 - 📋 **开发规划**：[docs/development-plan.md](docs/development-plan.md)
-- 🔒 **安全说明**：[SECURITY_NOTES.md](SECURITY_NOTES.md)
+- 🔒 **安全说明**：[docs/SECURITY_NOTES.md](docs/SECURITY_NOTES.md)
+- 📚 **API文档**：[docs/API.md](docs/API.md)
+- 🚀 **部署指南**：[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+- ✅ **安全检查**：[docs/SECURITY_CHECK.md](docs/SECURITY_CHECK.md)
 
 ## 版本历史
 
