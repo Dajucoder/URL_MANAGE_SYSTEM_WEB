@@ -16,6 +16,9 @@ lxml==4.9.3
 html5lib==1.1
 setuptools>=65.0.0
 
+# API文档生成
+drf-spectacular==0.27.0
+
 # 生产环境依赖
 gunicorn==21.2.0
 whitenoise==6.6.0
