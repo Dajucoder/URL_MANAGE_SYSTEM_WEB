@@ -40,7 +40,7 @@ export const ICON_OPTIONS = [
 export const APP_NAME = 'URL管理系统';
 
 // API 基础URL
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 // 分页配置
 export const PAGE_SIZE = 20;

@@ -24,14 +24,21 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 复制项目文件
 COPY . .
 
+# 安装netcat用于检查数据库连接
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+# 复制并设置启动脚本权限
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # 创建静态文件和媒体文件目录
 RUN mkdir -p static media
 
-# 收集静态文件
-RUN python manage.py collectstatic --noinput
-
 # 暴露端口
 EXPOSE 8000
+
+# 设置入口点
+ENTRYPOINT ["/entrypoint.sh"]
 
 # 启动命令
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]

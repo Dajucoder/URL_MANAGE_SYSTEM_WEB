@@ -6,15 +6,15 @@ services:
     image: postgres:15-alpine
     container_name: url_manage_db_dev
     environment:
-      POSTGRES_DB: url_manage_db_dev
+      POSTGRES_DB: url_manage_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - url_manage_network_dev
+      - url_manage_network
 
   # Redis缓存
   redis:
@@ -23,38 +23,37 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - url_manage_network_dev
+      - url_manage_network
 
-  # Django后端（开发模式）
+  # Django后端
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: url_manage_backend_dev
     environment:
       - DEBUG=True
       - DB_ENGINE=django.db.backends.postgresql
-      - DB_NAME=url_manage_db_dev
+      - DB_NAME=url_manage_db
       - DB_USER=postgres
       - DB_PASSWORD=postgres123
       - DB_HOST=db
       - DB_PORT=5432
-      - DJANGO_SECRET_KEY=dev-secret-key-not-for-production
+      - DJANGO_SECRET_KEY=your-secret-key-change-in-production
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
     ports:
       - "8000:8000"
     depends_on:
       - db
       - redis
     networks:
-      - url_manage_network_dev
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+      - url_manage_network
 
-  # React前端（开发模式）
+  # React前端 (开发模式)
   frontend:
     build:
       context: ./frontend
@@ -62,6 +61,7 @@ services:
     container_name: url_manage_frontend_dev
     environment:
       - REACT_APP_API_URL=http://localhost:8000/api
+      - PORT=3000
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -70,12 +70,13 @@ services:
     depends_on:
       - backend
     networks:
-      - url_manage_network_dev
-    command: npm start
+      - url_manage_network
 
 volumes:
-  postgres_data_dev:
+  postgres_data:
+  static_volume:
+  media_volume:
 
 networks:
-  url_manage_network_dev:
+  url_manage_network:
     driver: bridge
